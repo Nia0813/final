@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+    <head>
+        <title>{{title}}</title>
+    </head>
+    <body>
+        <div>
+            <nav>
+                    <a href='/'>Home</a> |
+                    <a href='/blog'> Main Blog </a> |
+                    
+                    <a href='/newpost'>Add Blog Entry</a> |
+                    <a href='/signup'>User Signup</a> |
+                    
+                    <a href='/login'>Login</a> |
+                    <a href='/logout'>Logout</a> |
+                
+            </nav>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
