@@ -45,7 +45,7 @@ def index():
     return render_template('index.html', all_users = all_users)
 
 #blog displays post
-@app.route('/blog', methods = ['GET'])
+@app.route('/blog', methods = ['POST','GET'])
 def blog_list():
     title = "Blogs"
     if session:
@@ -97,7 +97,8 @@ def login():
         
         if user and user.password != password:
             session['username'] = username
-            return redirect ('/newpost')
+            error_password = "Please Enter Password"
+            return redirect ('/login')
         
     return render_template('login.html', username = username, 
            error_username = error_username, error_password= error_password)
@@ -122,27 +123,27 @@ def signup():
     
         if not empty_field (username) or not empty_field(password) or not empty_field(verify):
             error_field = "Fill in All fields"
-            return render_template ('signup.html')
+            return render_template ('signup.html', error_field=error_field)
 
         if len (username) < 3:
             error_username= 'Username must be a minimum of 3 characters'
-            return render_template ('signup.html')
+            return render_template ('signup.html',error_username=error_username)
 
         if not empty_field (username):
             error_username = "Please Enter A Username "
-            return render_template ('signup.html')
+            return render_template ('signup.html',error_username=error_username)
 
         if password != verify:
             error_verify = "Passwords must match"
-            return render_template ('signup.html')
+            return render_template ('signup.html',error_verify=error_verify)
 
         if len (password) < 3:
             error_password = "Passwords must be a minimum of 3 characters"
-            return render_template ('signup.html')
+            return render_template ('signup.html',error_password=error_password)
         
         if not empty_field (password):
             error_password = "Please Enter A Password"
-            return render_template ('signup.html')
+            return render_template ('signup.html',error_password=error_password)
         existing_user = User.query.filter_by(username= username).first()    
         #if not error_username and not error_password and not error_verify:
         if not existing_user:
