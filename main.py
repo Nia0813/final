@@ -63,7 +63,8 @@ def blog_list():
 
     else:
         blog = Blog.query.order_by(Blog.id.desc()).all()
-    return render_template('blogs.html', title = title, blog = blog)
+        return render_template('blogs.html', title = title, blog = blog)
+    return redirect ('index.html')
 
 def empty_field(self):
 	if self:
@@ -170,13 +171,13 @@ def new_blogs():
             blog_title = request.form['blog_title']
             blog_body = request.form['blog_body']
             applicant = User.query.filter_by(username = session['username']).first()
-            blog_new = Blog(blog_title, blog_body, applicant)
+           
 
         if blog_title == "":
             error_title = "Please enter a title"
 
         if blog_body == "":
-            error_body= "Please write a post"
+            error_body= "Please write a blog"
 
         if error_title == "" and error_body == "":
             new_blog = Blog(blog_title, blog_body, applicant)
@@ -188,7 +189,7 @@ def new_blogs():
             return redirect('/blog?id={}&user={}'.format(blog_id.id, user.username))
 
              
-        return render_template('newpost.html', title = "Add A New Post", blog_title = blog_title, blog_body = blog_body, error_title = error_title, error_body = error_body)
+        return render_template('newpost.html', title = "Add A New Blog", blog_title = blog_title, blog_body = blog_body, error_title = error_title, error_body = error_body)
      
         
 
