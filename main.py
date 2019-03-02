@@ -65,12 +65,18 @@ def blog_list():
         blog = Blog.query.order_by(Blog.id.desc()).all()
     return render_template('blogs.html', title = title, blog = blog)
 
+def empty_field(self):
+	if self:
+	    return True
+	else:
+	    return False
+
 @app.route('/login', methods = ['POST', 'GET'])
 def login():
-
+    
     username = ""
     error_username = ""
-    error_pwd= ""
+    error_password= ""
 
     if request.method == 'POST':
         username = request.form['username']
@@ -83,27 +89,27 @@ def login():
                 error_username = 'Please enter username'
 
         if password == "":
-            error_pwd = 'Enter your password'
+            error_password = 'Enter your password'
 
         if user and user.password != password:
-            error_pwd = "Incorrect password"
+            error_password = "Incorrect password"
         
         if user and user.password != password:
             session['username'] = username
             return redirect ('/newpost')
         
     return render_template('login.html', username = username, 
-           error_username = error_username, error_pwd= error_pwd)
+           error_username = error_username, error_password= error_password)
 
         
 @app.route('/signup', methods= ['POST', 'GET'])
 def signup():
     
-    verify= ""
-    password = ""
+    #verify= ""
+    error_field=""
     username = ""
     error_username = ""
-    error_pwd = ""
+    error_password = ""
     error_verify = ""
     
 
@@ -111,34 +117,44 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         verify = request.form ['verify']
-        
-        existing_user = User.query.filter_by(username= username).first()
+       
+    
+        if not empty_field (username) or not empty_field(password) or not empty_field(verify):
+            error_field = "Fill in All fields"
+            return render_template ('signup.html')
 
-    if len (username) < 3:
-        error_username= 'Username must be a minimum of 3 characters'
-        if username == "":
+        if len (username) < 3:
+            error_username= 'Username must be a minimum of 3 characters'
+            return render_template ('signup.html')
+
+        if not empty_field (username):
             error_username = "Please Enter A Username "
+            return render_template ('signup.html')
 
         if password != verify:
-            error_pwd = "Passwords must match"
             error_verify = "Passwords must match"
+            return render_template ('signup.html')
 
         if len (password) < 3:
-            error_pwd = "Passwords must be a minimum of 3 characters"
-            if password == "":
-                error_pwd = "Please Enter A Password"
-            
-        if not error_username and not error_pwd and not error_verify:
-            if not existing_user:
-                new_user = User(username, password,verify)
-                db.session.add(new_user)
-                db.session.commit()
-                session['username'] = username
-                return redirect('/newpost')
-            else:
-                error_username = "Username already in use"
+            error_password = "Passwords must be a minimum of 3 characters"
+            return render_template ('signup.html')
+        
+        if not empty_field (password):
+            error_password = "Please Enter A Password"
+            return render_template ('signup.html')
+        existing_user = User.query.filter_by(username= username).first()    
+        #if not error_username and not error_password and not error_verify:
+        if not existing_user:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['username'] = username
+            return redirect('/newpost')
+        else:
+            error_username = "Username already in use"
+            return render_template ('signup.html')
     
-    return render_template('signup.html', username=username, error_username= error_username, error_pwd = error_pwd, error_verify= error_verify)
+    return render_template('signup.html', username=username, error_username= error_username, error_password = error_password, error_verify= error_verify)
 
 
 
@@ -148,11 +164,13 @@ def new_blogs():
         blog_body = ""
         error_title= ""
         error_body = ""
-        applicant = User.query.filter_by(username = session['username']).first()
+        
 
         if request.method == 'POST':
             blog_title = request.form['blog_title']
             blog_body = request.form['blog_body']
+            applicant = User.query.filter_by(username = session['username']).first()
+            blog_new = Blog(post_title, post_entry, applicant)
 
         if blog_title == "":
             error_title = "Please enter a title"
@@ -160,7 +178,7 @@ def new_blogs():
         if blog_body == "":
             error_body= "Please write a post"
 
-        if error_title =="" and error_body == "":
+        if error_title == "" and error_body == "":
             new_blog = Blog(blog_title, blog_body, applicant)
             db.session.add(new_blog)
             db.session.commit()
@@ -170,7 +188,7 @@ def new_blogs():
             return redirect('/blog?id={}&user={}'.format(blog_id.id, user.username))
 
              
-        return render_template('newpost.html', title = " Blogz", blog_title = blog_title, blog_body = blog_body, error_title = error_title, error_body = error_body)
+        return render_template('newpost.html', title = "Add A New Post", blog_title = blog_title, blog_body = blog_body, error_title = error_title, error_body = error_body)
      
         
 
