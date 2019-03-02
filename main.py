@@ -170,7 +170,7 @@ def new_blogs():
             blog_title = request.form['blog_title']
             blog_body = request.form['blog_body']
             applicant = User.query.filter_by(username = session['username']).first()
-            blog_new = Blog(post_title, post_entry, applicant)
+            blog_new = Blog(blog_title, blog_body, applicant)
 
         if blog_title == "":
             error_title = "Please enter a title"
