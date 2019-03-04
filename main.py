@@ -47,7 +47,12 @@ def index():
 #blog displays post
 @app.route('/blog', methods = ['POST','GET'])
 def blog_list():
-    title = "Blogs"
+    title="Blog Arthors"
+    single_user = request.args.get('applicant_id')
+
+    if single_user:
+        single_post = Blog.query.filter_by(applicant_id=single_user)
+        return render_template('singleUser.html', posts=single_post)
     if session:
         applicant=User.query.filter_by(username=session['username']).first()
     
