@@ -114,54 +114,54 @@ def login():
 @app.route('/signup', methods= ['POST', 'GET'])
 def signup():
     
-    #verify= ""
-    error_field=""
-    username = ""
-    error_username = ""
-    error_password = ""
-    error_verify = ""
-    
-
     if request.method == 'POST':
+        username = ""
+        error_username = ""
+        error_password = ""
+        error_verify = ""
+        
         username = request.form['username']
         password = request.form['password']
         verify = request.form ['verify']
        
     
-        if not empty_field (username) or not empty_field(password) or not empty_field(verify):
-            error_field = "Fill in All fields"
-            return render_template ('signup.html', error_field=error_field)
-
-        if len (username) < 3:
-            error_username= 'Username must be a minimum of 3 characters'
-            return render_template ('signup.html',error_username=error_username)
-
         if not empty_field (username):
-            error_username = "Please Enter A Username "
-            return render_template ('signup.html',error_username=error_username)
+            error_username = "Please Enter A Username"
+        else:
+            if len (username) < 3:
+                error_username= 'Username must be a minimum of 3 characters'
+                #return render_template ('signup.html',error_username=error_username)
+
+        if not empty_field (password):
+            error_password = "Please Enter A Password"
+        else:
+            if len (password) < 3:
+                error_password = "Passwords must be a minimum of 3 characters"
+                #return render_template ('signup.html', error_password=error_password)
+
 
         if password != verify:
             error_verify = "Passwords must match"
-            return render_template ('signup.html',error_verify=error_verify)
+            ##return render_template ('signup.html',error_verify=error_verify)
 
-        if len (password) < 3:
-            error_password = "Passwords must be a minimum of 3 characters"
-            return render_template ('signup.html',error_password=error_password)
-        
-        if not empty_field (password):
-            error_password = "Please Enter A Password"
-            return render_template ('signup.html',error_password=error_password)
-        existing_user = User.query.filter_by(username= username).first()    
-        #if not error_username and not error_password and not error_verify:
-        if not existing_user:
-            new_user = User(username, password)
-            db.session.add(new_user)
-            db.session.commit()
-            session['username'] = username
-            return redirect('/newpost')
+        if not error_username and not error_password and not error_verify:
+            return render_template("signup.html", username=username)
         else:
-            error_username = "Username already in use"
-            return render_template ('signup.html')
+        #return render_template ("newpost.html", username=username, password=password, verify=verify,
+        #error_username=error_username, error_password=error_password, error_verify=error_verify)
+            #return render_template ('signup.html', error_password=error_password)
+        
+            existing_user = User.query.filter_by(username= username).first()    
+        #if not error_username and not error_password and not error_verify:
+            if not existing_user:
+                new_user = User(username, password)
+                db.session.add(new_user)
+                db.session.commit()
+                session['username'] = username
+                return redirect('/newpost')
+            else:
+                error_username = "Username already in use"
+                return render_template ('signup.html')
     
     return render_template('signup.html', username=username, error_username= error_username, error_password = error_password, error_verify= error_verify)
 
