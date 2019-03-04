@@ -43,7 +43,7 @@ def require_login():
 def index():
     all_users = User.query.all()
     return render_template('index.html', all_users = all_users)
-
+    
 #blog displays post
 @app.route('/blog', methods = ['POST','GET'])
 def blog_list():
@@ -99,7 +99,9 @@ def login():
             session['username'] = username
             error_password = "Please Enter Password"
             return redirect ('/login')
-        
+        else:
+            return redirect ('/newpost')
+
     return render_template('login.html', username = username, 
            error_username = error_username, error_password= error_password)
 
